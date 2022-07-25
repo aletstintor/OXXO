@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OXXO</title>
+
+    <!-- CSS only -->
+    <script src="~/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+        .container-fluid {
+            width: 100%;
+            margin-left: initial;
+        }
+
+        .text-theme {
+            color: #002550 !important;
+        }
+
+        body {
+            font-size: .85rem;
+            font-weight: 400;
+            line-height: 1.3;
+        }
+
+        .form-control, .form-select {
+            font-size: .73rem;
+        }
+    </style>
+</head>
+<body>
+    <main class="col ps-md-2">
+        <div class="page-header">
+            @RenderBody()
+        </div>
+    </main>
+    <!--JavaScript Bundle with Popper -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+

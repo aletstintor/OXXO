@@ -1,0 +1,76 @@
+﻿@model OXXO.Models.Usuario
+
+<style>
+    .input-validation-error {
+        border-color: red;
+    }
+</style>
+
+<div class="offcanvas-header">
+    <h5>Crear Un Nuevo Usuario</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body">
+    <form id="FormCrear" asp-action="Crear"  class="p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="mb-3">
+                <label asp-for="Nombre">Nombre(s)</label>
+                <input asp-for="Nombre" class="form-control" autocomplete="off" required /><span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Apellido">Apellido(s)</label>
+                <input asp-for="Apellido" class="form-control" autocomplete="off" required/><span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="UserName">Nombre de Usuario</label>
+                <input asp-for="UserName" class="form-control" autocomplete="off" required/><span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="IdPerfil">Perfil</label>
+                <select asp-for="IdPerfil" id="ddPerfiles" name="IdPerfil" class="form-select" asp-items="ViewBag.Perfiles">
+                    <option value="">Seleccione el Perfil</option>
+                </select> <span asp-validation-for="IdPerfil" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Contrasena">Contraseña</label>
+                <input asp-for="Contrasena" class="form-control" type="password" autocomplete="off" required/><span asp-validation-for="Contrasena" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="ConfirmarContrasena">Confirmar Contraseña</label>
+                <input asp-for="ConfirmarContrasena" class="form-control" type="password" autocomplete="off" required/><span asp-validation-for="ConfirmarContrasena" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Correo">Correo</label>
+                <input asp-for="Correo" class="form-control" type="email" /><span asp-validation-for="Correo" class="text-danger" required></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Puesto">Puesto</label>
+                <input asp-for="Puesto" class="form-control" /><span asp-validation-for="Puesto" class="text-danger" required></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Vigencia">Vigencia</label>
+                <input asp-for="Vigencia" class="form-control" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" autocomplete="off" required/><span asp-validation-for="Vigencia" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row p-2">
+            <input type="submit" value="Crear Usuario" class="btn btn-success" />
+        </div>
+    </form>
+</div>
+
+
+<script>
+    $('#FormCrear').on('submit', function () {
+        if (this.checkValidity() == false) {
+            return false;
+        }
+    });
+    $(function () {
+        $("#ddPerfiles").select();
+    });
+
+</script>
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

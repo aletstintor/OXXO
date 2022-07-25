@@ -1,0 +1,439 @@
+﻿@model IEnumerable<OXXO.Models.searchConceptos>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.Alert != null) //Agregado por Miguel
+{
+    <div id="alerta" class="container body-content">
+        @Html.Raw(@ViewBag.Alert)
+    </div>
+}
+
+
+<style>
+    .red {
+        background-color: red !important;
+    }
+
+    .disabled-button {
+        pointer-events: none;
+        /*  font-size:12px;*/
+    }
+    th.dt-center, td.dt-center {
+        text-align: center;
+    }
+</style>
+<div class="container">
+    <h1 id="titulo">Mesa de Control</h1>
+
+    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" style="width: 120px; border-radius: 0px; "><i class="bi bi-funnel"></i> Filtrar</button>
+
+    <button class="btn btn-success" onclick="window.location.href='../Alta/index'" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" style="width: 125px; border-radius: 0px; "><i class="bi bi-pencil-square"></i> Dar de alta</button>
+
+    <div class="accordion-bral">
+        <div>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5>Filtrar</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <form id="dataForm" class="p-4">
+                        <div class="row">
+                            <div class="mb-2">
+                                <label for="exampleFormControlInput1" class="form-label">ID Emisor: </label>
+                                <input type="text" name="IdEmisor" class="form-control form-control-sm" id="exampleFormControlInput1" style="text-transform:uppercase">
+                            </div>
+                            <div class="mb-2">
+                                <label for="exampleFormControlInput1" class="form-label">RFC: </label>
+                                <input type="text" name="Rfc" class="form-control form-control-sm" id="exampleFormControlInput1" maxlength="13" style="text-transform:uppercase">
+                            </div>
+                            <div class="mb-2">
+                                <label for="exampleFormControlInput1" class="form-label">Nombre Completo: </label>
+                                <input type="text" name="NombreCompleto" class="form-control form-control-sm" id="exampleFormControlInput1">
+                            </div>
+                            <div class="mb-2">
+                                <label for="exampleFormControlInput1" class="form-label">Razon Social: </label>
+                                <input type="text" name="RazonSocial" class="form-control form-control-sm" id="exampleFormControlInput1">
+                            </div>
+                            <div class="mb-2">
+                                <label for="exampleFormControlInput1" class="form-label">Tipo de Persona:</label>
+                                <div class="row">
+                                    <div class="col-lg-5">
+                                        <input type="checkbox" name="Persona" id="checkGrado" value="Fisica" class="only-one">Fisica
+                                    </div>
+                                    <div class="col-lg-5">
+                                        <input type="checkbox" name="Persona" id="checkResumen" value="Moral" class="only-one">Moral
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label for="exampleFormControlInput1" class="form-label">Estatus del Comercio:</label>
+                                <select id="ddEstatus" name="Estatus" class="form-select">
+                                    <option value="">Selecciona una opción...</option>
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Aprobado">Aprobado</option>
+                                    <option value="Rechazado">Rechazado</option>
+                                </select> <span name="Estatus" class="text-danger"></span>
+                            </div>
+                            <div class="mb-2">
+                                <label for="exampleFormControlInput1" class="form-label">Confirmación de Correo:</label>
+                                <select id="ddEstatus" name="EmailConfirmado" class="form-select">
+                                    <option value="">Selecciona una opción...</option>
+                                    <option value="Pendiente">Email Pendiente</option>
+                                    <option value="Aprobado">Email Aprobado</option>
+                                    <option value="Rechazado">Email Rechazado</option>
+                                </select> <span name="EmailConfirmado" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row p-2">
+                            <button class="btn btn-primary" type="submit" id="filtrar" data-bs-dismiss="offcanvas" aria-label="Close"><i class="bi bi-search"></i> Buscar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-chip row">
+        <ul id="chips"></ul>
+    </div>
+
+    <table id="categorizacion" class="table-responsive table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>ID Emisor</th>
+                <th>RFC</th>
+                <th>Nombre Completo</th>
+                <th>Nombre Comercial</th>
+                <th>Dirección</th>
+                <th>Banco</th>
+                <th>Estatus</th>
+                <th>Correo Confirmado</th>
+                <th id="editar">Editar</th>
+                <th id="CargadeDocs">Carga de Documentos</th>
+                <th id="Revis">Revisión</th>
+                <th id="enviardocemail">Enviar Documento por Email</th>
+                <th id="catth">Categorizar</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="sendDoc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Enviar documento a: </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" asp-controller="MesaControl" asp-action="SendDocMail" enctype="multipart/form-data">
+                    <input class="modal-label" id="RFC" name="RFC" hidden>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="mb-3">
+                                <label for="Correo" class="col-form-label">Correo:</label>
+                                <input type="text" class="form-control" id="Correo" name="Correo" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="file" name="Files" id="Files" multiple="multiple" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <input id="btnEnviar" type="submit" value="Enviar correo" class="btn btn-success" disabled />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <br />
+</div>
+
+<div class="accordion-bral">
+    <div>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRightEdit" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header">
+                <h5>Categorizar Información</h5>
+
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div id="createBodyEdit" class="offcanvas-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script>
+
+    $(document).ready(function () {
+
+    });
+
+    var data = [];
+    var search = [];
+    const $elemento = document.querySelector("#chips");
+    $elemento.innerHTML = "";
+
+    var frm = $('#dataForm');
+    data = frm.serializeArray();
+
+    for (var i = 0; i < data.length; i++) {
+
+        if (data[i].value != '') {
+            $("#chips").append("<li>" + data[i].name + ": " + data[i].value + "</li>");
+            search[i] = { "name": data[i].name, "value": data[i].value };
+        } else {
+            search[i] = { "name": data[i].name, "value": "NULL" }
+        }
+    }
+
+    $(function () {
+
+        $('input[type=file]').change(function () {
+            if ($('input[type=file]').val() == '') {
+                $('#btnEnviar').attr('disabled', true)
+
+            }
+            else {
+                $('#btnEnviar').attr('disabled', false);
+
+            }
+        })
+
+    });
+
+
+    let Id;
+
+    $('#categorizacion tbody').on('click', '#editCat', function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        $.ajax({
+            url: '/MesaControl/Categorizar/',
+            type: 'GET',
+            data: { Id: Id },
+            success: function (res) {
+
+                $('#offcanvasRightEdit').html(res);
+                $('#createBodyEdit').modal('show');
+            },
+            error: function () {
+                alert("¡Hay un problema con el servicio, favor de reiniciar!")
+            }
+        });
+
+    });
+
+    $.ajax({
+        url: '/MesaControl/Buscar',
+        data: search,
+        type: 'POST',
+        dataType: "json",
+        bFilter: false,
+        success: function (json) {
+            //console.log(json[0].permiso[0].edicion)
+            var parsed = JSON.parse(JSON.stringify(json[0]));
+
+            console.log(parsed)
+
+            $('#categorizacion').DataTable({
+                data: json[0].data,
+                paging: true,
+                destroy: true,
+                scrollX: true,
+                searching: true,
+                language: {
+                    "lengthMenu": "Mostrar _MENU_ registros",
+                    "zeroRecords": "No se encontró ningun registro",
+                    "info": "Mostrando _PAGE_ página(s) de _PAGES_",
+                    "infoEmpty": "No hay registros encontrados",
+                    "infoFiltered": "(filtrado de _MAX_ registros)",
+                    "search": "Buscar",
+                    "serchPlaceholder": "Buscar",
+                    "paginate": {
+                        "previous": "Anterior",
+                        "next": "Siguiente"
+                    },
+
+                },
+                columns: [
+                    { data: 'IdEmisor' },
+                    { data: 'RFC' },
+                    { data: 'NombreCompleto' },
+                    { data: 'NombreComercial' },
+                    { data: 'Direccion' },
+                    { data: 'Banco' },
+                    { data: 'Estatus' },
+                    { data: 'EmailConfirmado' },
+                    {
+                        render: function (data, type, full, meta) {
+                                return '<a href="/MesaControl/Editar?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-pencil-square"></i></a>';
+                        }
+                    },
+                    {
+                        render: function (data, type, full, meta) {
+                            return '<a href="/CargaDocumentos/Index?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-folder-plus"></i></a>';
+                        }
+                    },
+                    {
+                        render: function (data, type, full, meta) {
+                            return '<a href="/MesaControl/Verificacion?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-clipboard-check"></i></a>';
+                        }
+                    },
+                    {
+                        render: function (data, type, full, meta) {
+                            return '<a class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="modal" data-bs-target="#sendDoc" data-bs-whatever=' + full.RFC + ' data-bs-whatever2=' + full.Correo + '><i class="bi bi-envelope-plus"></i></a>';
+                        }
+                    },
+                    {
+                        render: function (data, type, full, meta) {
+
+                            return '<a id="editCat" data-url="Categorizar" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightEdit" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-tags-fill"></i></a>';
+                        }
+                    },
+
+                ],
+                columnDefs: [
+                    { "className": "dt-center", "targets": "_all" },
+                    {
+                        targets: 6,
+
+                        render: function (data, type, row, meta) {
+
+                            if (data == "Pendiente") {
+
+                                return '<input type="button" class="btn btn-warning btn-sm disabled-button" value="' + data + '"/>';
+                            }
+                            if (data == "Aprobado") {
+
+                                return '<input type="button" class="btn btn-success btn-sm disabled-button" value="' + data + '"/>';
+                            }
+                            if (data == "Rechazado") {
+
+                                return '<input type="button" class="btn btn-danger btn-sm disabled-button" value="' + data + '"/>';
+                            }
+
+                        }
+                    },
+                    {
+                        targets: 7,
+
+                        render: function (data, type, row, meta) {
+
+                            if (data == "1") {
+        
+
+                                return '<input type="button" class="btn btn-warning btn-sm disabled-button" value="Pendiente"/>';
+                            }
+                            if (data == "2") {
+                      
+                                return '<input type="button" class="btn btn-success btn-sm disabled-button" value="Aprobado"/>';
+                            }
+                            if (data == "3") {
+                        
+                                return '<input type="button" class="btn btn-danger btn-sm disabled-button" value="Rechazado"/>';
+                            }
+
+                        }
+                    },
+                   
+                    {
+                        
+                        targets: 8,
+                        visible: json[0].permisoPerfil === false ? false : true,
+                          render: function (data, type, full, meta) {
+                            return '<a href="/MesaControl/Editar?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-pencil-square"></i></a>';
+
+                        }
+                        
+                    },
+                    {
+
+                        targets: 9,
+                        visible: json[0].permisoPerfil === false ? false : true,
+                        render: function (data, type, full, meta) {
+                            return '<a href="/CargaDocumentos/Index?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-folder-plus"></i></a>';
+                        }
+
+                    },
+                    {
+
+                        targets: 10,
+                        visible: json[0].permisoPerfil === false ? false : true,
+                        render: function (data, type, full, meta) {
+                            return '<a href="/MesaControl/Verificacion?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-clipboard-check"></i></a>';
+                        }
+
+                    },
+                    {
+
+                        targets: 11,
+                        visible: json[0].permisoPerfil === false ? false : true,
+                        render: function (data, type, full, meta) {
+                            return '<a class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="modal" data-bs-target="#sendDoc" data-bs-whatever=' + full.RFC + ' data-bs-whatever2=' + full.Correo + '><i class="bi bi-envelope-plus"></i></a>';
+                        }
+
+                    },
+                    {
+                        targets: 12,
+                        visible: json[0].permisoPerfil === false ? false : true,
+                        render: function (data, type, full, meta) {
+
+                            return '<a id="editCat" data-url="Categorizar" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightEdit" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-tags-fill"></i></a>';
+                        }
+
+                    },
+                ],
+
+                
+
+            });
+
+
+            //Enviar Documento por email obtener valores de correo y rfc por button
+            var exampleModal = document.getElementById('sendDoc')
+            exampleModal.addEventListener('show.bs.modal', function (event) {
+
+                var button = event.relatedTarget
+
+                var recipient = button.getAttribute('data-bs-whatever')
+                var fullcorreo = button.getAttribute('data-bs-whatever2')
+
+                var modalTitle = exampleModal.querySelector('.modal-title')
+                var modalBodyInput = exampleModal.querySelector('.modal-body input')
+                var modalLabel = exampleModal.querySelector('.modal-label')
+
+                modalTitle.textContent = 'Enviar documento a: ' + recipient
+                modalBodyInput.value = fullcorreo
+                modalLabel.value = recipient
+                modalLabel.textContent = recipient
+
+
+            })
+
+            //obtiene valor del boton categorizar
+            var offcanvas = document.getElementById('offcanvasRightEdit')
+            offcanvas.addEventListener('show.bs.offcanvas', function (event) {
+                var button = event.relatedTarget
+
+                Id = button.getAttribute('data-bs-whatever')
+            })
+        },
+        error: function () {
+            Swal.fire({
+                title: json[0].mensaje,
+                text: json[0].data,
+                icon: 'error',
+                confirmButtonText: 'cerrar'
+            });
+        }
+        
+    });
+</script>

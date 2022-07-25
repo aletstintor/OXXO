@@ -1,0 +1,284 @@
+﻿
+<style>
+
+</style>
+<div class="container">
+    <h1 id="titulo">Tablero</h1>
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card">
+                <div class="card-body">
+                    <h6>$ OPERACIÓN DIARIA MES ACTUAL</h6>
+                    <div id="OperacionDiaria"></div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <div id="OpMesActual1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Emisores TOP 10</h6>
+                    <table id="tableTopTen" class="table" style="width:100%">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col">ID Emisor</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Transacciones</th>
+                                <th scope="col">Monto</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <br />
+            <div class="card">
+                <div class="card-body">
+                    <h6>Emisores Inactivos</h6>
+                    <table id="tableInactivos" class="table" style="width:100%">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col">ID Emisor</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Transacciones</th>
+                                <th scope="col">Monto</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <div id="OpMesActual2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+
+    $.ajax({
+        "url": "https://retoolapi.dev/j7UoBz/data",
+        "type": "GET",
+        "datatype": 'json',
+        "success": function (res) {
+
+            $('#tableTopTen').DataTable({
+                scrollY: '150px',
+            scrollCollapse: false,
+            paging: false,
+            searching: false,
+                data: res,
+                columns: [
+                    { 'data': 'id' },
+                    { 'data': 'Nombre' },
+                    { 'data': 'Transaccion' },
+                    { 'data': 'Monto' },
+                ]
+            });
+        }
+    });
+
+    $.ajax({
+        "url": "https://retoolapi.dev/ixsg8r/inactivos",
+        "type": "GET",
+        "datatype": 'json',
+        "success": function (res) {
+
+            $('#tableInactivos').DataTable({
+                scrollY: '150px',
+                scrollCollapse: false,
+                paging: false,
+                searching: false,
+                data: res,
+                columns: [
+                    { 'data': 'id' },
+                    { 'data': 'Nombre' },
+                    { 'data': 'Transaccion' },
+                    { 'data': 'Column Monto' },
+                ]
+            });
+        }
+    });
+
+
+    function drawBackgroundColor() {
+        var datosgrafica;
+        $.ajax({
+            url: 'https://retoolapi.dev/OkaT7u/opdiaria',
+            type: 'GET',
+            dataType: 'json',
+            success: function (result) {
+
+                var gData = [];
+                var jsonData = result;
+                for (const x in jsonData) {
+                    if (jsonData.hasOwnProperty(x)) {
+                        let dato = Object.values(jsonData[x]);
+                        dato.splice(1, 1);
+                        gData.push(dato);
+                            
+                    }
+                }
+                   
+                var data = new google.visualization.DataTable();
+                data.addColumn('number', 'id');
+                data.addColumn('number', 'fondos');
+                data.addRows(gData);
+
+                var options = {
+                    legend: { position: 'none' },
+                    hAxis: {
+                        title: 'Días del mes'
+                    },
+                    vAxis: {
+                        title: 'Fondos Adquiridos'
+                    },
+                    backgroundColor: '#fff'
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('OperacionDiaria'));
+                chart.draw(data, options);
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                alert("Ha ocurrido un error");
+            }
+        });
+
+           
+    }
+       
+    function drawChart() {
+
+        $.ajax({
+            url: 'https://retoolapi.dev/1OOV0F/pormes',
+            type: 'GET',
+            dataType: 'json',
+            success: function (result) {
+
+                var jsonData = result;
+                var gData = [];
+                gData.push(['Meses', 'Fondos']);
+                if (jsonData.length > 0) {
+                    jsonData.forEach(function (row) {
+                        Object.keys(row).forEach(function (key) {
+                            gData.push(new Array(key, row[key]));
+                        });
+                    });
+                }
+                gData.splice(1, 1);
+                var data = google.visualization.arrayToDataTable(
+
+                    gData
+                );
+                   
+                    
+                var options = {
+                    chart: {
+                        title: '$ OP. PERIODO ACTUAL',
+                    },
+                    legend: { position: 'none' },
+                    bars: 'vertical',
+                    vAxis: { format: 'decimal' },
+                    height: 226,
+                    colors: ['#d95f02']
+                };
+
+                var chart = new google.charts.Bar(document.getElementById('OpMesActual1'));
+
+                chart.draw(data, google.charts.Bar.convertOptions(options));
+                   
+                   
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                alert("Ha ocurrido un error");
+            }
+        });
+
+
+
+    }
+        
+    function drawChart1() {
+
+        $.ajax({
+            url: 'https://retoolapi.dev/o5jgS6/mesant',
+            type: 'GET',
+            dataType: 'json',
+            success: function (result) {
+
+                var jsonData = result;
+                var gData = [];
+                gData.push(['Meses', 'Fondos']);
+                if (jsonData.length > 0) {
+                    jsonData.forEach(function (row) {
+                        Object.keys(row).forEach(function (key) {
+                            gData.push(new Array(key, row[key]));
+                        });
+                    });
+                }
+                gData.splice(1, 1);
+                var data = google.visualization.arrayToDataTable(
+
+                    gData
+                );
+
+
+                var options = {
+                    chart: {
+                        title: '$ OP. PERIODO ANTERIOR',
+                    },
+                    legend: { position: 'none' },
+                    bars: 'vertical',
+                    vAxis: { format: 'decimal' },
+                    height: 226,
+                    colors: ['#00D58B']
+                };
+
+                var chart = new google.charts.Bar(document.getElementById('OpMesActual2'));
+
+                chart.draw(data, google.charts.Bar.convertOptions(options));
+
+
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                alert("Ha ocurrido un error");
+            }
+        });
+
+    }
+
+    $(window).resize(function () {
+        drawBackgroundColor();
+        drawChart();
+        drawChart1();
+    });
+
+    google.charts.load('current', { packages: ['corechart', 'line'] });
+    google.charts.setOnLoadCallback(drawBackgroundColor);
+    google.charts.load('current', { 'packages': ['bar'] });
+    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawChart1);
+
+</script>
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

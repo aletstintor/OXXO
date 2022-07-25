@@ -1,0 +1,46 @@
+﻿@model OXXO.Models.Usuario
+
+<div class="offcanvas-header">
+    <h5>Cambiar Contraseña</h5>
+   
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body">
+    <h6 class="card-subtitle mb-2 text-muted">Usuario: @Html.DisplayFor(model => model.UserName)</h6>
+    <form id="FormContrasena" asp-action="CambiarContrasena" class="p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="IdUsuario" />
+
+
+        <div class="row">
+            <div class="mb-3">
+                <label asp-for="Contrasena" class="control-label">Nueva Contraseña</label>
+                <input asp-for="Contrasena" class="form-control" type="password" /><span asp-validation-for="Contrasena" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ConfirmarContrasena" class="control-label">Confirmar Contraseña</label>
+                <input asp-for="ConfirmarContrasena" class="form-control" type="password" /><span asp-validation-for="ConfirmarContrasena" class="text-danger"></span>
+            </div>
+
+        </div>
+        <div class="row p-2">
+            <input type="submit" value="Guardar Contraseña" class="btn btn-success" />
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $('#FormContrasena').on('submit', function () {
+            if (this.checkValidity() == false) {
+                return false;
+            }
+        });
+        $(function () {
+            $("#dd2Perfiles").select();
+        });
+
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,213 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OXXO</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <script src="~/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="~/css/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="~/DataTables/datatables.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        ::-webkit-scrollbar {
+            width: 20px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #d6dee1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #d6dee1;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #d6dee1;
+            border-radius: 20px;
+            border: 6px solid transparent;
+            background-clip: content-box;
+        }
+
+        div.content {
+            padding: 1px 16px;
+            height: 100px;
+        }
+
+        body {
+            font-size: .85rem;
+            font-weight: 400;
+            line-height: 1.3;
+        }
+
+        .form-control, .form-select {
+            font-size: .73rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <input id="idP" type="hidden" value="@Context.Session.GetString("IdPerfil")" />
+
+    <div id="menu"></div>
+    <div class="container-fluid">
+        @if (Context.Session.Get("IdPerfil") != null)
+        {
+
+            <div class="row flex-nowrap d-flex align-items-stretch">
+                <div id="sidebar" class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 collapse collapse-horizontal border-end" style="background-color: #FFFFFF;">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start pt-2 min-vh-100">
+                        <a href="#" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none">
+                            <img class="pt-4" src="~/img/logo.png" alt="Alternate Text" style="width: 150px; padding-left: 2rem;" />
+                        </a>
+                        <div id="foo-view" data-url="@Url.Action(action:"MostrarMenu", controller:"Menu")"></div>
+                    </div>
+                </div>
+
+                <div class="col p-0 content border-end">
+                    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+                    <div class="navbar navbar-expand-lg navbar-light bg-light" style="border-bottom: 1px solid lightgray;">
+                        <div class="container-fluid">
+                            <a id="menubtn" href="#" data-bs-target="#sidebar" data-bs-toggle="collapse" class="menuu p-1 text-decoration-none"><i class="bi bi-list bi-lg py-2 p-1"></i> Menu</a>
+                            <div class="justify-content-end" style="margin-right: 3rem;" id="navbarNavAltMarkup">
+                                <div class="navbar-nav pr-3">
+                                    <div class="dropdown">
+                                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-person-circle"></i>
+                                            <span class="d-none d-sm-inline mx-1">@Context.Session.GetString("Nombre") @Context.Session.GetString("Apellido") </span>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser1">
+                                            <li><a class="dropdown-item" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightEditar" aria-controls="offcanvasRightEditar" onclick="MostrarInfoUser()">Configurar Información Personal</a></li>
+                                            <li><a class="dropdown-item" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightContra" aria-controls="offcanvasRightContra" onclick="MostrarContrasena()">Configurar Contraseña</a></li>
+                                            <li><a class="dropdown-item" data-bs-parent="#sidebar" asp-controller="Login" asp-action="LogOut">Cerrar Sesion</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+                    @RenderBody()
+
+                </div>
+
+            </div>
+        }
+    </div>
+
+    <div class="accordion-bral">
+        <div>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRightContra" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5>Cambiar Contraseña</h5>
+
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div id="createBodyContra" class="offcanvas-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-bral">
+        <div>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRightEditar" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5>Editar Usuario</h5>
+
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div id="createBodyEditar" class="offcanvas-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="~/DataTables/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/af-2.4.0/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/r-2.3.0/datatables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/af-2.4.0/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/r-2.3.0/datatables.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+
+
+            var id_perfil = $("#idP").val()
+            if (id_perfil == "") {
+                CerrarSesion();
+            }
+            else {
+                Mostrar();
+            }
+
+
+            function CerrarSesion() {
+                alert("La sesión ha caducado, se cerrará la sesión.");
+                window.location = '/Login/Login';
+            }
+
+
+
+            function Mostrar() {
+                var url = $("#foo-view").data("url");
+                $("#foo-view").load(url);
+            }
+
+
+        function MostrarContrasena() {
+            var id = '@HttpContextAccessor.HttpContext.Session.GetString("IdUsuario")';
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            $.ajax({
+                url: '/Usuarios/CambiarContrasena/',
+                type: 'GET',
+                data: { Id: id },
+                success: function (result) {
+                    $('#offcanvasRightContra').html(result);
+                    $('#createBodyContra').modal('show');
+
+                },
+                error: function () {
+                    alert("¡Hay un problema con el servicio, favor de reiniciar!")
+                }
+            });
+        }
+
+        function MostrarInfoUser() {
+            var id = '@HttpContextAccessor.HttpContext.Session.GetString("IdUsuario")';
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            $.ajax({
+                url: '/Usuarios/Editar/',
+                type: 'GET',
+                data: { Id: id },
+                success: function (result) {
+                    $('#offcanvasRightEditar').html(result);
+                    $('#createBodyEditar').modal('show');
+
+                },
+                error: function () {
+                    alert("¡Hay un problema con el servicio, favor de reiniciar!")
+                }
+            });
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+
