@@ -1,0 +1,22 @@
+﻿@model OXXO.Models.BitacoraComercio
+@using Microsoft.AspNetCore.Http
+
+
+<div class="offcanvas-header">
+    <h5>Bitácora del Comercio</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body">
+
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@Model.Comentarios por: @Model.UsuarioFal</h5>
+            <p class="card-text">El @Model.Fal.</p>
+        </div>
+    </div>
+
+</div>
+
+
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -116,6 +116,7 @@
                 <th id="Revis">Revisión</th>
                 <th id="enviardocemail">Enviar Documento por Email</th>
                 <th id="catth">Categorizar</th>
+                <th id="bitacorath">Ver Bítacora</th>
 
             </tr>
         </thead>
@@ -168,6 +169,22 @@
         </div>
     </div>
 </div>
+
+<div class="accordion-bral">
+    <div>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRightHistory" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header">
+                <h5>Bitácora de Comercios</h5>
+
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div id="createBodyHistory" class="offcanvas-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script>
 
@@ -211,6 +228,27 @@
 
     let Id;
 
+    $('#categorizacion tbody').on('click', '#verBitacora', function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        //debugger
+        $.ajax({
+            url: '/MesaControl/Bitacora/',
+            type: 'GET',
+            data: { Id: Id },
+            success: function (res) {
+                //console.log(res);
+
+                $('#offcanvasRightHistory').html(res);
+                $('#createBodyHistory').modal('show');
+            },
+            error: function () {
+                alert("¡Hay un problema con el servicio, favor de reiniciar!")
+            }
+        });
+
+    });
+
     $('#categorizacion tbody').on('click', '#editCat', function (event) {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -220,6 +258,7 @@
             type: 'GET',
             data: { Id: Id },
             success: function (res) {
+                //console.log(res);
 
                 $('#offcanvasRightEdit').html(res);
                 $('#createBodyEdit').modal('show');
@@ -238,10 +277,10 @@
         dataType: "json",
         bFilter: false,
         success: function (json) {
-            //console.log(json[0].permiso[0].edicion)
-            var parsed = JSON.parse(JSON.stringify(json[0]));
+            //console.log(json[0].perfilData.edicion)
+            //var parsed = JSON.parse(JSON.stringify(json[0]));
 
-            console.log(parsed)
+            //console.log(parsed)
 
             $('#categorizacion').DataTable({
                 data: json[0].data,
@@ -298,6 +337,12 @@
                             return '<a id="editCat" data-url="Categorizar" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightEdit" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-tags-fill"></i></a>';
                         }
                     },
+                    {
+                        render: function (data, type, full, meta) {
+
+                            return '<a id="verBitacora" data-url="Bitacora" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightHistory" data-bs-whatever=' + full.IdComercio + ' ><i class="bi bi-clock-history"></i></a>';
+                        }
+                    },
 
                 ],
                 columnDefs: [
@@ -347,7 +392,8 @@
                     {
                         
                         targets: 8,
-                        visible: json[0].permisoPerfil === false ? false : true,
+                        //visible: json[0].perfilData.edicion === false ? false : true,
+                        visible: json[0].editar === false ? false : true,
                           render: function (data, type, full, meta) {
                             return '<a href="/MesaControl/Editar?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-pencil-square"></i></a>';
 
@@ -357,7 +403,8 @@
                     {
 
                         targets: 9,
-                        visible: json[0].permisoPerfil === false ? false : true,
+                        //visible: json[0].perfilData.carga === false ? false : true,
+                        visible: json[0].cargar === false ? false : true,
                         render: function (data, type, full, meta) {
                             return '<a href="/CargaDocumentos/Index?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-folder-plus"></i></a>';
                         }
@@ -366,7 +413,8 @@
                     {
 
                         targets: 10,
-                        visible: json[0].permisoPerfil === false ? false : true,
+                        //visible: json[0].perfilData.aprobacion === false ? false : true,
+                        visible: json[0].aprobar === false ? false : true,
                         render: function (data, type, full, meta) {
                             return '<a href="/MesaControl/Verificacion?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-clipboard-check"></i></a>';
                         }
@@ -375,7 +423,8 @@
                     {
 
                         targets: 11,
-                        visible: json[0].permisoPerfil === false ? false : true,
+                        //visible: json[0].perfilData.aprobacion === false ? false : true,
+                        visible: json[0].aprobar === false ? false : true,
                         render: function (data, type, full, meta) {
                             return '<a class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="modal" data-bs-target="#sendDoc" data-bs-whatever=' + full.RFC + ' data-bs-whatever2=' + full.Correo + '><i class="bi bi-envelope-plus"></i></a>';
                         }
@@ -383,10 +432,21 @@
                     },
                     {
                         targets: 12,
-                        visible: json[0].permisoPerfil === false ? false : true,
+                        //visible: json[0].perfilData.categorizacion === false ? false : true,
+                        visible: json[0].categorizar === false ? false : true,
                         render: function (data, type, full, meta) {
 
                             return '<a id="editCat" data-url="Categorizar" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightEdit" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-tags-fill"></i></a>';
+                        }
+
+                    },
+                    {
+                        targets: 13,
+                        //visible: json[0].perfilData.categorizacion === false ? false : true,
+                        visible: true,
+                        render: function (data, type, full, meta) {
+
+                            return '<a id="verBitacora" data-url="Bitacora" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightHistory" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-clock-history"></i></a>';
                         }
 
                     },
@@ -424,6 +484,15 @@
                 var button = event.relatedTarget
 
                 Id = button.getAttribute('data-bs-whatever')
+            })
+
+            //obtiene valor del boton bitácora
+            var offcanvasHistory = document.getElementById('offcanvasRightHistory')
+            offcanvasHistory.addEventListener('show.bs.offcanvas', function (event) {
+                var button = event.relatedTarget
+
+                Id = button.getAttribute('data-bs-whatever')
+                //console.log(Id);
             })
         },
         error: function () {

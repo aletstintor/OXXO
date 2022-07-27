@@ -177,7 +177,8 @@ namespace OXXO.Controllers
             try
             {
                 Permisos permiso = new Permisos();
-                Perfil permisoPerfil = new Perfil();
+                Perfil perfil = new Perfil();
+                List<Perfil> perfilList = new List<Perfil>();
                 using (SqlConnection connection = new SqlConnection(dbConn))
                 {
                     connection.Open();
@@ -194,18 +195,20 @@ namespace OXXO.Controllers
 
                             if (permiso.Crear && permiso.Editar && permiso.Leer)
                             {
-                                permisoPerfil.edicion = Convert.ToBoolean(dr["edicion"]);
-                                permisoPerfil.carga = Convert.ToBoolean(dr["carga"]);
-                                permisoPerfil.aprobacion = Convert.ToBoolean(dr["aprobacion"]);
-                                permisoPerfil.categorizacion = Convert.ToBoolean(dr["categorizacion"]);
+                                perfil.edicion = Convert.ToBoolean(dr["edicion"]);
+                                perfil.carga = Convert.ToBoolean(dr["carga"]);
+                                perfil.aprobacion = Convert.ToBoolean(dr["aprobacion"]);
+                                perfil.categorizacion = Convert.ToBoolean(dr["categorizacion"]);
 
-                                permisoPerfil.PerfilList.Add(permisoPerfil);
+                                perfilList.Add(perfil);
+
+                                perfil.PerfilList = perfilList;
                             }
                         }
                     }
                 }
                 //return Json(permiso);
-                return Json(permiso, permisoPerfil);
+                return Json(permiso, perfilList);
             }
             catch (Exception)
             {
@@ -221,7 +224,7 @@ namespace OXXO.Controllers
             try
             {
                 PermisosUsuario userPermiso = new PermisosUsuario();
-                List<PermisosUsuario> perfilList = new List<PermisosUsuario>();
+                //Perfil perfil = new Perfil();
                 if (IdPerfil != null)
                 {
                     using (SqlConnection connection = new SqlConnection(dbConn))
@@ -248,7 +251,7 @@ namespace OXXO.Controllers
                                     userPermiso.aprobacion = Convert.ToBoolean(dr["aprobacion"]);
                                     userPermiso.categorizacion = Convert.ToBoolean(dr["categorizacion"]);
 
-                                    perfilList.Add(userPermiso);
+                                    userPermiso.perfilList.Add(userPermiso);
                                 }
                             }
                         }
