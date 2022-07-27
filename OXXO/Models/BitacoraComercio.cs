@@ -9,10 +9,12 @@ namespace OXXO.Models
 {
     public partial class BitacoraComercio
     {
+        IEnumerable<BitacoraComercio> comercios { get; set; }
+        public int IdComercio   { get; set; }
         public string IdEmisor { get; set; }
         public string Comentarios { get; set; }
-        public int? Estatus { get; set; }
-        public int? Activo { get; set; }
+        public bool? Estatus { get; set; }
+        public bool? Activo { get; set; }
         public int? UsuarioFal { get; set; }
         public DateTime? Fal { get; set; }
         public int? UsuarioFum { get; set; }

@@ -31,12 +31,12 @@ namespace OXXO.Controllers
             {
                 if (!string.IsNullOrEmpty(NombrePerfil))
                 {
-                    consultaP = "SELECT IdPerfil,Nombre,Descripcion,Activo,FechaAlta,FechaUltimaMod,IdUsuarioFA,IdUsuarioFUM, edicion, carga, aprobacion, categorizacion FROM Perfil WHERE Nombre LIKE '%" + NombrePerfil + "%'";
+                    consultaP = "SELECT IdPerfil,Nombre,Descripcion,Activo,FechaAlta,FechaUltimaMod,IdUsuarioFA,IdUsuarioFUM,edicion,carga,aprobacion,categorizacion FROM Perfil WHERE Nombre LIKE '%" + NombrePerfil + "%'";
 
                 }
                 else
                 {
-                    consultaP = "SELECT IdPerfil,Nombre,Descripcion,Activo,FechaAlta,FechaUltimaMod,IdUsuarioFA,IdUsuarioFUM, edicion, carga, aprobacion, categorizacion FROM Perfil";
+                    consultaP = "SELECT IdPerfil,Nombre,Descripcion,Activo,FechaAlta,FechaUltimaMod,IdUsuarioFA,IdUsuarioFUM,edicion,carga,aprobacion,categorizacion FROM Perfil";
                 }
 
                 ViewBag.Alert = alert;

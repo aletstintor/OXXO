@@ -495,6 +495,48 @@ namespace OXXO.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Bitacora(int Id)
+        {
+            BitacoraComercio clsBitacora = new BitacoraComercio();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(dbConn))
+                {
+
+                    string consulta = $"SELECT * FROM Bitacora_Comercio WHERE IdComercio = '{Id}'";
+                    SqlCommand command = new SqlCommand(consulta, connection);
+
+                    connection.Open();
+                    using (SqlDataReader dr = command.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            clsBitacora.IdComercio = Convert.ToInt32(dr["IdComercio"]);
+                            clsBitacora.Comentarios = Convert.ToString(dr["Comentarios"]);
+                            clsBitacora.Estatus = Convert.ToBoolean(dr["Estatus"]);
+                            clsBitacora.Activo = Convert.ToBoolean(dr["Activo"]);
+                            clsBitacora.UsuarioFal = Convert.ToInt32(dr["Usuario_FAl"]);
+                            clsBitacora.Fal = Convert.ToDateTime(dr["FAl"]);
+                            clsBitacora.UsuarioFum = Convert.ToInt32(dr["Usuario_FUM"]);
+                            clsBitacora.Fal = Convert.ToDateTime(dr["FUM"]);
+
+                        }
+                    }
+                    connection.Close();
+                }
+                return PartialView("Bitacora", clsBitacora);
+
+            }
+            catch (Exception ex)
+            {
+
+                ViewBag.Alert = CommonServices.ShowAlert(Alerts.Danger, ex.Message);
+                return RedirectToAction(nameof(Index), new { alert = ViewBag.Alert });
+            }
+
+        }
+
         //Listado Clusters
         public object ListadoDeClusters()
         {
@@ -666,7 +708,6 @@ namespace OXXO.Controllers
 
                     List<message> json = new List<message>();
 
-                    Perfil perfil = new Perfil();
 
                     string consulta = string.Format("exec SP_SelectComercios {0}, {1}, '{2}', '{3}', '{4}', {5}, {6}, '{7}'", 1, persona, data.rfc, data.NombreCompleto, data.RazonSocial, data.Estatus, data.EmailConfirmado, data.IdEmisor);
          
@@ -694,7 +735,7 @@ namespace OXXO.Controllers
                             cmc.Portal = Convert.ToString(dr["Portal"]);
                             cmc.PersonaMoral = Convert.ToInt32(dr["PersonaMoral"]);
                             cmc.PersonaFisica = Convert.ToInt32(dr["PersonaFisica"]);
-                            cmc.Estatus = dr.IsDBNull("Estatus") ? "Pendiente": Convert.ToString(dr["Estatus"]);
+                            cmc.Estatus = dr.IsDBNull("Estatus") ? "Pendiente" : Convert.ToString(dr["Estatus"]);
                             cmc.Activo = Convert.ToInt32(dr["Activo"]);
                             cmc.IdCompania = Convert.ToString(dr["Compania"]);
                             cmc.IdTipoDeposito = Convert.ToString(dr["TipoDeposito"]);
@@ -702,12 +743,19 @@ namespace OXXO.Controllers
                             listComercio.Add(cmc);
                         }
 
+
                         var perms = new PermisosController(Configuration).GetPermisosUsuario("Index", "MesaControl", puestoUser);
                         res.permiso = perms.Editar;
+                        res.editar = perms.edicion;
+                        res.cargar = perms.carga;
+                        res.aprobar = perms.aprobacion;
+                        res.categorizar = perms.categorizacion;
                         res.status = true;
                         res.mensaje = "Success";
                         res.data = listComercio;
-                        res.perfilPermisosData = perms.PerfilList;
+                        //VOLVER A REEMPLAZAR LA CONSULTA PARA OBTENER LOS PERMISOS DE ACUERDO AL PERFIL O USUARIO SEGÚN INICIADA LA SESIÓN
+                        //res.perfilData = perms.perfilList;
+                        
 
                         json.Add(res);
                         connection.Close();

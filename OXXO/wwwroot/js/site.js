@@ -99,6 +99,12 @@ $('#filtrar').click(function (e) {
                             return '<a id="editCat" data-url="Categorizar" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightEdit" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-tags-fill"></i></a>';
                         }
                     },
+                    {
+                        render: function (data, type, full, meta) {
+
+                            return '<a id="verBitacora" data-url="Bitacora" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightHistory" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-clock-history"></i></a>';
+                        }
+                    },
 
                 ],
                 columnDefs: [
@@ -148,7 +154,8 @@ $('#filtrar').click(function (e) {
                     {
 
                         targets: 8,
-                        visible: json[0].permiso === true ? false : true,
+                        //visible: json[0].perfilData.edicion === false ? false : true,
+                        visible: json[0].edicion === false ? false : true,
                         render: function (data, type, full, meta) {
                             return '<a href="/MesaControl/Editar?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-pencil-square"></i></a>';
 
@@ -158,7 +165,8 @@ $('#filtrar').click(function (e) {
                     {
 
                         targets: 9,
-                        visible: json[0].permiso === true ? false : true,
+                        //visible: json[0].perfilData.carga === false ? false : true,
+                        visible: json[0].cargar === false ? false : true,
                         render: function (data, type, full, meta) {
                             return '<a href="/CargaDocumentos/Index?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-folder-plus"></i></a>';
                         }
@@ -167,7 +175,8 @@ $('#filtrar').click(function (e) {
                     {
 
                         targets: 10,
-                        visible: json[0].permiso === true ? false : true,
+                        //visible: json[0].perfilData.aprobacion === false ? false : true,
+                        visible: json[0].aprobar === false ? false : true,
                         render: function (data, type, full, meta) {
                             return '<a href="/MesaControl/Verificacion?RFC=' + full.RFC + '" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px; "><i class="bi bi-clipboard-check"></i></a>';
                         }
@@ -176,7 +185,8 @@ $('#filtrar').click(function (e) {
                     {
 
                         targets: 11,
-                        visible: json[0].permiso === true ? false : true,
+                        //visible: json[0].perfilData.aprobacion === false ? false : true,
+                        visible: json[0].aprobar === false ? false : true,
                         render: function (data, type, full, meta) {
                             return '<a class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="modal" data-bs-target="#sendDoc" data-bs-whatever=' + full.RFC + ' data-bs-whatever2=' + full.Correo + '><i class="bi bi-envelope-plus"></i></a>';
                         }
@@ -184,10 +194,21 @@ $('#filtrar').click(function (e) {
                     },
                     {
                         targets: 12,
-                        visible: json[0].permiso === true ? false : true,
+                        //visible: json[0].perfilData.categorizacion === false ? false : true,
+                        visible: json[0].categorizar === false ? false : true,
                         render: function (data, type, full, meta) {
 
                             return '<a id="editCat" data-url="Categorizar" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightEdit" data-bs-whatever=' + full.RFC + ' ><i class="bi bi-tags-fill"></i></a>';
+                        }
+
+                    },
+                    {
+                        targets: 13,
+                        //visible: json[0].perfilData.categorizacion === false ? false : true,
+                        visible: true,
+                        render: function (data, type, full, meta) {
+
+                            return '<a id="verBitacora" data-url="Bitacora" type="submit" class="btn btn-outline-secundary btn-sm" style="border-radius: 0px;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightHistory" data-bs-whatever=' + full.IdComercio + ' ><i class="bi bi-clock-history"></i></a>';
                         }
 
                     },
@@ -221,6 +242,14 @@ $('#filtrar').click(function (e) {
             //obtiene valor del boton categorizar
             var offcanvas = document.getElementById('offcanvasRightEdit')
             offcanvas.addEventListener('show.bs.offcanvas', function (event) {
+                var button = event.relatedTarget
+
+                Id = button.getAttribute('data-bs-whatever')
+            })
+
+            //obtiene valor del boton bitácora
+            var offcanvasHistory = document.getElementById('offcanvasRightHistory')
+            offcanvasHistory.addEventListener('show.bs.offcanvas', function (event) {
                 var button = event.relatedTarget
 
                 Id = button.getAttribute('data-bs-whatever')

@@ -27,7 +27,7 @@ namespace OXXO.Models
         public bool Crear { get; set; }
         public bool Editar { get; set; }
 
-        public List<Perfil> PerfilList { get; set; }
+        public List<PermisosUsuario> perfilList = new List<PermisosUsuario>();
 
         public bool edicion { get; set; }
         public bool carga { get; set; }
