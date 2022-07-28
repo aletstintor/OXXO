@@ -39,16 +39,16 @@ namespace OXXO.Controllers
                 string consulta = "";
                 if (!String.IsNullOrEmpty(Nombre))
                 {
-                    consulta = "SELECT * FROM Usuario WHERE Nombre LIKE '%" + Nombre + "%'";
+                    consulta = "SELECT u.IdUsuario,u.Nombre, u.Apellido,u.UserName,u.Correo,u.Activo,u.Vigencia,u.Puesto,p.Nombre as Perfil from usuario u inner join Perfil p on p.IdPerfil = u.IdPerfil where u.Nombre LIKE '%" + Nombre + "%'";
 
                 }
                 else if (!String.IsNullOrEmpty(UserName))
                 {
-                    consulta = "SELECT * FROM Usuario WHERE UserName LIKE '%" + UserName + "%'";
+                    consulta = "SELECT u.IdUsuario,u.Nombre, u.Apellido,u.UserName,u.Correo,u.Activo,u.Vigencia,u.Puesto,p.Nombre as Perfil from usuario u inner join Perfil p on p.IdPerfil = u.IdPerfil where u.UserName LIKE '%" + UserName + "%'";
                 }
                 else
                 {
-                    consulta = "SELECT * FROM usuario";
+                    consulta = "SELECT u.IdUsuario,u.Nombre, u.Apellido,u.UserName,u.Correo,u.Activo,u.Vigencia,u.Puesto,p.Nombre as Perfil from usuario u inner join Perfil p on p.IdPerfil = u.IdPerfil";
                 }
                 List<Usuario> ListaUsuarios = new List<Usuario>();
                 if (!String.IsNullOrEmpty(consulta))
