@@ -406,7 +406,7 @@ namespace OXXO.Controllers
                 if (ModelState["Contrasena"].Errors.Count == 0 && ModelState["ConfirmarContrasena"].Errors.Count == 0)
                 {
                     string contrasenaEncriptada = Usuario.GetMD5Hash(clsUsuario.Contrasena);
-                    using (SqlConnection connection = new SqlConnection())
+                    using (SqlConnection connection = new SqlConnection(dbConn))
                     {
                         connection.Open();
                         using (SqlCommand command = new SqlCommand("SP_CambiarContrasena", connection))
